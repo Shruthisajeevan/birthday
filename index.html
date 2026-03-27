@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>for you, always 🤍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Gloock:ital@0;1&family=Instrument+Serif:ital@0;1&family=Caveat:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:    #0c080b;
+      --parch:  #f5eee4;
+      --rose:   #c4687a;
+      --blush:  #e8b4bc;
+      --fawn:   #c9a882;
+      --dusk:   #6b3d52;
+      --ivory:  #fdf8f2;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      background:var(--ink);
+      font-family:'Instrument Serif',serif;
+      color:var(--parch);
+      overflow-x:hidden;
+      cursor:default;
+    }
+    /* grain overlay */
+    body::after{
+      content:'';
+      position:fixed;inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events:none;z-index:9999;
+      opacity:0.4;mix-blend-mode:overlay;
+    }
+
+    /* ══ LANDING ══ */
+    #landing{
+      position:fixed;inset:0;
+      background:#0c080b;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      z-index:500;
+      transition:opacity 1.8s cubic-bezier(.4,0,.2,1), transform 1.8s cubic-bezier(.4,0,.2,1);
+    }
+    #landing.gone{opacity:0;transform:scale(1.07);pointer-events:none;}
+
+    .ambient-glow{
+      position:absolute;
+      width:400px;height:400px;
+      background:radial-gradient(circle,rgba(245,150,40,.09) 0%,transparent 65%);
+      top:50%;left:50%;transform:translate(-50%,-50%);
+      pointer-events:none;
+      animation:ambPulse 3s ease-in-out infinite;
+    }
+    @keyframes ambPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+    .candle-wrap{
+      display:flex;flex-direction:column;align-items:center;gap:24px;
+      cursor:pointer;user-select:none;position:relative;z-index:1;
+    }
+
+    .candle{display:flex;flex-direction:column;align-items:center;position:relative;}
+    .glow-halo{
+      position:absolute;top:-28px;left:50%;transform:translateX(-50%);
+      width:140px;height:70px;
+      background:radial-gradient(ellipse,rgba(250,180,60,.18) 0%,transparent 70%);
+      pointer-events:none;animation:ambPulse 2s ease-in-out infinite;
+    }
+    .flame{
+      width:20px;height:38px;
+      background:radial-gradient(ellipse at 50% 80%,#fffbe6 0%,#f5c842 28%,#e8783a 62%,transparent 100%);
+      border-radius:50% 50% 35% 35%/60% 60% 40% 40%;
+      animation:flicker 1.9s ease-in-out infinite;
+      filter:drop-shadow(0 0 14px rgba(248,180,60,.9)) drop-shadow(0 0 30px rgba(248,120,30,.6));
+    }
+    @keyframes flicker{
+      0%,100%{transform:scaleX(1)   scaleY(1)   rotate(-1deg);}
+      25%    {transform:scaleX(.87) scaleY(1.07) rotate(2deg);}
+      50%    {transform:scaleX(1.06) scaleY(.95) rotate(-2deg);}
+      75%    {transform:scaleX(.91) scaleY(1.05) rotate(1deg);}
+    }
+    .wick{width:2px;height:10px;background:#3a2a1a;margin-bottom:-2px;}
+    .cbody{
+      width:34px;height:96px;
+      background:linear-gradient(to right,#e6ddd0,#f5f0e8,#ddd4c5);
+      border-radius:3px 3px 2px 2px;
+      position:relative;overflow:hidden;
+    }
+    .cbody::after{content:'';position:absolute;top:0;left:0;right:0;height:10px;
+      background:linear-gradient(to bottom,rgba(248,180,60,.25),transparent);}
+    .drip{position:absolute;background:#f5f0e8;border-radius:0 0 6px 6px;}
+    .d1{width:7px;height:20px;top:4px;left:5px;}
+    .d2{width:5px;height:13px;top:2px;right:7px;}
+    .cbase{width:40px;height:9px;background:linear-gradient(to right,#c8bfb0,#ddd6ca,#c0b8a8);border-radius:2px;}
+
+    .land-text{
+      font-family:'Caveat',cursive;
+      font-size:clamp(1.5rem,4vw,2rem);
+      color:var(--fawn);
+      text-align:center;line-height:1.45;
+    }
+    .land-hint{
+      font-family:'Instrument Serif',serif;
+      font-style:italic;font-size:.85rem;
+      color:rgba(201,168,130,.45);
+      letter-spacing:.2em;
+      animation:breathe 2.5s ease-in-out infinite;
+    }
+    @keyframes breathe{0%,100%{opacity:.3}50%{opacity:.8}}
+
+    /* ══ CANVAS ══ */
+    #starCanvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+    /* ══ PAGE ══ */
+    #page{
+      opacity:0;
+      background:linear-gradient(175deg,#100810 0%,#180e14 45%,#100d0e 100%);
+      min-height:100vh;
+    }
+    #page.show{animation:pageReveal 2s ease forwards;}
+    @keyframes pageReveal{to{opacity:1;}}
+
+    .s{position:relative;z-index:1;}
+
+    /* ══ HERO ══ */
+    .hero{
+      min-height:100vh;
+      display:grid;place-items:center;
+      padding:80px 24px;
+      text-align:center;
+    }
+    .hero-inner{display:flex;flex-direction:column;align-items:center;}
+
+    .eyebrow{
+      font-family:'Fraunces',serif;
+      font-size:.7rem;letter-spacing:.48em;
+      color:var(--fawn);text-transform:uppercase;
+      opacity:0;animation:up .9s .4s ease forwards;
+    }
+    .kicker{
+      font-family:'Gloock',serif;font-style:italic;
+      font-size:clamp(1rem,3vw,1.45rem);
+      color:var(--blush);margin:20px 0 10px;
+      opacity:0;animation:up .9s .65s ease forwards;
+    }
+    .htitle{
+      font-family:'Fraunces',serif;font-weight:300;
+      font-size:clamp(4.5rem,16vw,10rem);
+      line-height:.92;letter-spacing:-.03em;
+      color:var(--ivory);
+      opacity:0;animation:up .9s .85s ease forwards;
+    }
+    .htitle em{font-style:italic;color:var(--rose);display:block;}
+
+    .hyear{
+      font-family:'Caveat',cursive;
+      font-size:clamp(.95rem,2.5vw,1.35rem);
+      color:var(--fawn);margin-top:16px;
+      opacity:0;animation:up .9s 1.05s ease forwards;
+    }
+    .rule{
+      display:flex;align-items:center;gap:14px;
+      margin:38px 0;
+      opacity:0;animation:up .9s 1.2s ease forwards;
+    }
+    .rl{flex:1;max-width:60px;height:1px;background:rgba(196,104,122,.3);}
+    .rd{width:4px;height:4px;border-radius:50%;background:var(--rose);}
+    .scroll-cue{
+      font-family:'Caveat',cursive;font-size:.9rem;
+      color:rgba(201,168,130,.4);letter-spacing:.1em;
+      opacity:0;animation:up .9s 1.45s ease forwards;
+    }
+    .scroll-cue span{display:block;animation:bob 2s 2s ease-in-out infinite;}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+    @keyframes up{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ══ SECTION HELPERS ══ */
+    .stag{
+      font-family:'Fraunces',serif;font-size:.67rem;
+      letter-spacing:.44em;color:var(--fawn);
+      text-transform:uppercase;margin-bottom:48px;
+      display:flex;align-items:center;gap:16px;
+    }
+    .stag::after{content:'';flex:1;height:1px;background:rgba(201,168,130,.18);}
+    .stag.c{justify-content:center;}
+    .stag.c::after,.stag.c::before{content:'';flex:1;max-width:70px;height:1px;background:rgba(201,168,130,.18);}
+
+    .reveal{opacity:0;transform:translateY(44px);transition:opacity .95s ease,transform .95s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    /* ══ CONFESSION ══ */
+    .confession-wrap{padding:100px 24px;max-width:700px;margin:0 auto;}
+    .confession-card{
+      background:linear-gradient(135deg,rgba(196,104,122,.07),rgba(107,61,82,.05));
+      border:1px solid rgba(196,104,122,.15);
+      border-radius:4px;
+      padding:clamp(32px,6vw,56px);
+      position:relative;overflow:hidden;
+    }
+    .confession-card::before{
+      content:'❝';
+      position:absolute;top:-10px;left:24px;
+      font-size:9rem;color:rgba(196,104,122,.05);
+      font-family:'Fraunces',serif;line-height:1;pointer-events:none;
+    }
+    .cbody-text{
+      font-family:'Instrument Serif',serif;font-style:italic;
+      font-size:clamp(1.12rem,2.6vw,1.42rem);
+      line-height:2.05;color:var(--parch);position:relative;
+    }
+    .cbody-text strong{font-style:normal;color:var(--rose);font-weight:400;}
+    .cbody-text .ul{border-bottom:1px solid rgba(196,104,122,.45);padding-bottom:1px;}
+
+    /* ══ PHOTO ══ */
+    .photo-section{
+      padding:40px 24px 100px;
+      display:flex;flex-direction:column;
+      align-items:center;gap:28px;
+    }
+    .pol-outer{position:relative;max-width:320px;width:100%;}
+    .blob{
+      position:absolute;border-radius:50%;
+      filter:blur(50px);pointer-events:none;z-index:0;
+    }
+    .b1{width:260px;height:260px;background:rgba(196,104,122,.13);top:-40px;left:-40px;}
+    .b2{width:200px;height:200px;background:rgba(107,61,82,.16);bottom:-30px;right:-30px;}
+    .polaroid{
+      position:relative;z-index:1;
+      background:#f5efe5;
+      padding:12px 12px 50px;
+      box-shadow:0 6px 28px rgba(0,0,0,.55),inset 0 0 0 1px rgba(0,0,0,.04);
+      transform:rotate(-2deg);
+      transition:transform .45s ease,box-shadow .45s ease;
+    }
+    .polaroid:hover{transform:rotate(0deg) scale(1.025);box-shadow:0 12px 40px rgba(0,0,0,.65);}
+    .pol-img{
+      width:100%;aspect-ratio:1;
+      background:linear-gradient(135deg,#2a1520,#1a0f16);
+      overflow:hidden;
+    }
+    .pol-img img{width:100%;height:100%;object-fit:cover;display:block;}
+    .pol-placeholder{
+      width:100%;height:100%;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:12px;
+    }
+    .pol-placeholder .picon{font-size:2.8rem;opacity:.45;}
+    .pol-placeholder p{
+      font-family:'Caveat',cursive;font-size:.9rem;
+      text-align:center;padding:0 16px;line-height:1.5;
+      color:rgba(107,61,82,.6);
+    }
+    .pol-caption{
+      position:absolute;bottom:8px;left:0;right:0;
+      text-align:center;font-family:'Caveat',cursive;
+      font-size:1.05rem;color:#5a3a48;letter-spacing:.04em;
+    }
+    /* pin */
+    .pin{
+      position:absolute;top:-15px;left:50%;transform:translateX(-50%);
+      z-index:2;width:15px;height:15px;
+      background:radial-gradient(circle at 35% 35%,#f5c842,#c48a10);
+      border-radius:50%;
+      box-shadow:0 3px 10px rgba(0,0,0,.5);
+    }
+    .pin::after{
+      content:'';position:absolute;bottom:-18px;left:50%;
+      transform:translateX(-50%);
+      width:2px;height:18px;
+      background:linear-gradient(to bottom,#c48a10,transparent);
+    }
+    /* tape */
+    .tape{
+      position:absolute;z-index:2;
+      background:rgba(245,230,200,.28);
+      border:1px solid rgba(245,230,200,.14);
+    }
+    .t1{width:58px;height:18px;top:-9px;left:-8px;transform:rotate(-11deg);}
+    .t2{width:48px;height:16px;bottom:18px;right:-6px;transform:rotate(9deg);}
+
+    .photo-note{
+      font-family:'Caveat',cursive;font-style:italic;
+      font-size:1.05rem;color:rgba(201,168,130,.5);
+      text-align:center;max-width:260px;
+    }
+
+    /* ══ HUG ══ */
+    .hug-wrap{padding:40px 24px 100px;max-width:700px;margin:0 auto;}
+    .hug-card{
+      background:rgba(107,61,82,.13);
+      border:1px solid rgba(196,104,122,.1);
+      border-radius:4px;
+      padding:clamp(32px,6vw,56px);
+      text-align:center;
+    }
+    .hug-emoji{
+      font-size:3.2rem;display:block;margin-bottom:32px;
+      animation:hugPulse 2.8s ease-in-out infinite;
+    }
+    @keyframes hugPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+    .hug-text{
+      font-family:'Gloock',serif;font-style:italic;
+      font-size:clamp(1.15rem,2.8vw,1.55rem);
+      line-height:1.92;color:var(--parch);
+    }
+    .hug-text em{color:var(--rose);font-style:normal;}
+
+    /* ══ TICKER ══ */
+    .ticker-wrap{padding:0 24px 100px;max-width:560px;margin:0 auto;}
+    .ticker-box{
+      border:1px solid rgba(196,104,122,.15);
+      border-radius:4px;padding:40px 32px;text-align:center;
+      background:rgba(12,8,11,.7);backdrop-filter:blur(12px);
+    }
+    .tlabel{
+      font-family:'Fraunces',serif;font-size:.67rem;
+      letter-spacing:.42em;color:var(--fawn);
+      text-transform:uppercase;margin-bottom:34px;
+    }
+    .tnums{display:flex;justify-content:center;align-items:flex-start;gap:6px;}
+    .tblock{display:flex;flex-direction:column;align-items:center;}
+    .tnum{
+      font-family:'Fraunces',serif;font-weight:300;
+      font-size:clamp(2.4rem,8vw,4.2rem);
+      color:var(--ivory);line-height:1;min-width:2ch;text-align:center;
+    }
+    .tunit{font-size:.58rem;letter-spacing:.3em;color:rgba(196,104,122,.55);text-transform:uppercase;margin-top:8px;}
+    .tsep{
+      font-family:'Fraunces',serif;
+      font-size:clamp(2rem,6vw,3.6rem);
+      color:rgba(196,104,122,.25);
+      padding-top:2px;align-self:flex-start;
+    }
+
+    /* ══ SIGN-OFF ══ */
+    .signoff{padding:80px 24px 120px;text-align:center;}
+    .signoff-text{
+      font-family:'Gloock',serif;font-style:italic;
+      font-size:clamp(1.05rem,2.8vw,1.45rem);
+      color:rgba(232,180,188,.65);line-height:1.95;
+      max-width:540px;margin:0 auto 44px;
+    }
+    .sig{
+      font-family:'Caveat',cursive;
+      font-size:clamp(2rem,6vw,3rem);
+      color:var(--rose);
+      animation:sigGlow 3.5s ease-in-out infinite;
+    }
+    @keyframes sigGlow{
+      0%,100%{text-shadow:0 0 20px rgba(196,104,122,.3);}
+      50%    {text-shadow:0 0 50px rgba(196,104,122,.75),0 0 90px rgba(196,104,122,.3);}
+    }
+    footer{padding:28px 20px 48px;text-align:center;font-size:.66rem;letter-spacing:.3em;color:rgba(201,168,130,.15);text-transform:uppercase;}
+
+    /* ══ PARTICLES ══ */
+    .petal{position:fixed;pointer-events:none;z-index:1000;font-size:1rem;animation:petalRise linear forwards;opacity:0;}
+    @keyframes petalRise{
+      0%  {opacity:0;transform:translateY(0) rotate(0deg);}
+      12% {opacity:.9;}
+      88% {opacity:.7;}
+      100%{opacity:0;transform:translateY(-85vh) rotate(400deg) translateX(20px);}
+    }
+    .spark{position:fixed;pointer-events:none;z-index:1001;width:5px;height:5px;border-radius:50%;animation:sparkFall linear forwards;}
+    @keyframes sparkFall{
+      0%  {opacity:1;transform:translateY(0) scale(1);}
+      100%{opacity:0;transform:translateY(100vh) scale(.3);}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ LANDING ══════════ -->
+<div id="landing">
+  <div class="ambient-glow"></div>
+  <div class="candle-wrap" onclick="openPage()">
+    <div class="candle">
+      <div class="glow-halo"></div>
+      <div class="flame"></div>
+      <div class="wick"></div>
+      <div class="cbody">
+        <div class="drip d1"></div>
+        <div class="drip d2"></div>
+      </div>
+      <div class="cbase"></div>
+    </div>
+    <div class="land-text">a little late.<br/>but made with everything.</div>
+    <div class="land-hint">tap the flame to open ✦</div>
+  </div>
+</div>
+
+<canvas id="starCanvas"></canvas>
+
+<!-- ══════════ MAIN PAGE ══════════ -->
+<div id="page">
+
+  <!-- HERO -->
+  <section class="s hero">
+    <div class="hero-inner">
+      <div class="eyebrow">✦ &nbsp; for you, always &nbsp; ✦</div>
+      <div class="kicker">wishing you the most beautiful birthday,</div>
+      <h1 class="htitle">Happy<br/><em>Birthday</em></h1>
+      <div class="hyear">my love &nbsp;✦&nbsp; <span id="yr"></span></div>
+      <div class="rule"><div class="rl"></div><div class="rd"></div><div class="rl"></div></div>
+      <div class="scroll-cue">keep scrolling <span>↓</span></div>
+    </div>
+  </section>
+
+  <!-- CONFESSION -->
+  <section class="s confession-wrap reveal">
+    <div class="stag">✦ &nbsp; a little confession</div>
+    <div class="confession-card">
+      <p class="cbody-text">
+        Okay — I have to be honest with you.<br/><br/>
+
+        I'm probably not your <strong>first wish today.</strong>
+        Someone else got there before me — maybe at midnight, maybe the second your eyes opened.
+        And honestly? That's okay.<br/><br/>
+
+        But here is what that person <span class="ul">didn't do</span> —<br/>
+        they didn't spend <strong>an entire week</strong> thinking about this moment.
+        Planning it. Rewriting it at 1am. Scrapping three different ideas.
+        Wanting so badly for this to feel <em>worthy</em> of you.<br/><br/>
+
+        And then — somehow — today came, and I panicked.
+        Not because I forgot <em>you.</em>
+        <strong>Never that. Never once.</strong><br/><br/>
+
+        I forgot the date because I was too busy thinking about you in every other moment.
+        And I know that sounds like an excuse —
+        but it is the <em>most honest thing I have.</em>
+      </p>
+    </div>
+  </section>
+
+  <!-- PHOTO -->
+  <section class="s photo-section reveal">
+    <div class="stag c">✦ &nbsp; us &nbsp; ✦</div>
+    <div class="pol-outer">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="pin"></div>
+      <div class="tape t1"></div>
+      <div class="tape t2"></div>
+      <div class="polaroid">
+        <div class="pol-img" id="photoSlot">
+          <!--
+            ✦ TO ADD YOUR PHOTO:
+            Delete the div.pol-placeholder below
+            and replace with: <img src="/home/amma/Downloads/WhatsApp Image 2026-03-27 at 9.32.58 AM.jpeg" alt="us"/>
+            Put your photo in the same folder as this file.
+          -->
+          <img src="photo.jpeg" alt="us">
+        </div>
+        <div class="pol-caption">you &amp; me ♥</div>
+      </div>
+    </div>
+    <p class="photo-note">my favourite human, existing beautifully in this world 🤍</p>
+  </section>
+
+  <!-- HUG -->
+  <section class="s hug-wrap reveal">
+    <div class="stag">✦ &nbsp; if i were there right now</div>
+    <div class="hug-card">
+      <span class="hug-emoji">🫂</span>
+      <p class="hug-text">
+        No cards. No grand gestures.<br/>
+        If I were standing in front of you right now —<br/>
+        <em>I would just hold you.</em><br/><br/>
+
+        I'd wrap both arms around you and <em>not let go.</em>
+        Not until every single thing that's been sitting heavy on your chest
+        just… disappeared.<br/><br/>
+
+        Every worry you carried quietly.<br/>
+        Every ache I wasn't close enough to take away.<br/>
+        Every moment you needed someone and I was miles too far.<br/><br/>
+
+        <em>I would hug you until all of it vanished.</em><br/><br/>
+
+        That is my birthday wish for you.
+        Not just today —
+        <em>every single day.</em>
+        Less pain. More you. More of this beautiful, ridiculous life
+        that you deserve so completely.
+      </p>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <section class="s ticker-wrap reveal">
+    <div class="ticker-box">
+      <div class="tlabel">✦ &nbsp; your birthday, in real time &nbsp; ✦</div>
+      <div class="tnums">
+        <div class="tblock"><div class="tnum" id="tH">00</div><div class="tunit">hours</div></div>
+        <div class="tsep">:</div>
+        <div class="tblock"><div class="tnum" id="tM">00</div><div class="tunit">minutes</div></div>
+        <div class="tsep">:</div>
+        <div class="tblock"><div class="tnum" id="tS">00</div><div class="tunit">seconds</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIGN-OFF -->
+  <section class="s signoff reveal">
+    <p class="signoff-text">
+      You are my very first thought every single morning<br/>
+      and the last thing I smile about before I sleep.<br/><br/>
+      This distance is only temporary.<br/>
+      <em>What I feel for you is not.</em><br/><br/>
+      Happy birthday, my person. My favourite person. ✦
+    </p>
+    <div class="sig">— always, always yours 🤍</div>
+  </section>
+
+  <footer>made with love &nbsp;✦&nbsp; crafted over an entire week &nbsp;✦&nbsp; just for you</footer>
+</div>
+
+<script>
+// ── YEAR ─────────────────────────────────────────────────────
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// ── STARS ────────────────────────────────────────────────────
+const cvs = document.getElementById('starCanvas');
+const ctx = cvs.getContext('2d');
+let W, H, stars = [];
+function resize(){ W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
+window.addEventListener('resize', resize); resize();
+for(let i=0;i<90;i++) stars.push({
+  x:Math.random()*1920, y:Math.random()*1080,
+  r:Math.random()*1.3+.3, a:Math.random(),
+  s:Math.random()*.12+.04
+});
+(function loop(){
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s=>{
+    s.a+=s.s*.04; if(s.a>1){s.a=0;s.x=Math.random()*W;s.y=Math.random()*H;}
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,215,220,${s.a*.65})`; ctx.fill();
+  });
+  requestAnimationFrame(loop);
+})();
+
+// ── OPEN ─────────────────────────────────────────────────────
+function openPage(){
+  document.getElementById('landing').classList.add('gone');
+  const pg = document.getElementById('page');
+  pg.classList.add('show');
+  setTimeout(()=>{ burst(); rainPetals(); }, 900);
+}
+
+// ── CONFETTI BURST ───────────────────────────────────────────
+const colors=['#e8a0a8','#d4a843','#f4c9cf','#8b2e4a','#fef6f0','#c97d8c','#b5d9d4'];
+function burst(){
+  for(let i=0;i<90;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='spark';
+      el.style.cssText=`left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${1.8+Math.random()*2}s;animation-delay:0s;
+        width:${4+Math.random()*5}px;height:${4+Math.random()*5}px;
+        border-radius:${Math.random()>.5?'50%':'2px'};`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),4000);
+    },i*22);
+  }
+}
+
+// ── RISING PETALS ────────────────────────────────────────────
+const petals=['🌸','♥','✦','🌷','♡','✿','❀'];
+function rainPetals(){
+  for(let i=0;i<22;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='petal';
+      el.textContent=petals[Math.floor(Math.random()*petals.length)];
+      el.style.cssText=`left:${5+Math.random()*90}vw;bottom:0;
+        animation-duration:${4+Math.random()*4}s;
+        font-size:${.8+Math.random()*1.1}rem;
+        color:${colors[Math.floor(Math.random()*colors.length)]};`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),9000);
+    },i*350);
+  }
+}
+
+// ── TICKER ───────────────────────────────────────────────────
+function tick(){
+  const n=new Date(), m=new Date(n); m.setHours(0,0,0,0);
+  const d=Math.floor((n-m)/1000);
+  const h=Math.floor(d/3600), mn=Math.floor((d%3600)/60), s=d%60;
+  document.getElementById('tH').textContent=String(h).padStart(2,'0');
+  document.getElementById('tM').textContent=String(mn).padStart(2,'0');
+  document.getElementById('tS').textContent=String(s).padStart(2,'0');
+}
+setInterval(tick,1000); tick();
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
